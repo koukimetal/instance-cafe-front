@@ -1,5 +1,4 @@
 "use strict";
-//TODO select multi edge
 //WISH show degree
 var HamiltonCycle = function (N, M) {
     this.N = N;
@@ -10,15 +9,19 @@ var HamiltonCycle = function (N, M) {
         nodes: this.nodes,
         edges: this.edges
     };
+    this.degree = new Array(N);
+    for (var i = 0; i < N; i++) {
+        this.degree[i] = 0;
+    }
     var options = {};
 
-    this.HEAD_NODE = '#ffff99';
-    this.SELECTED_NODE = '#ffcccc';
+    this.SELECTED_NODE = '#ffff99';
+    this.PASSED_NODE = '#ccff99';
+    this.OVER_NODE = '#ffcccc';
     this.SELECTED_EDGE = '#ff3232';
 
-    this.permutation = [];
-    this.visited = new Set();
-    this.finished = false;
+    this.edgeSet = new Set();
+    this.selected = -1;
 
     this.network = new vis.Network(this.container, this.data, options);
     this.network.on("doubleClick", function (params) {
@@ -115,65 +118,94 @@ HamiltonCycle.prototype.makeRandomEdge = function(N, M) {
 };
 
 HamiltonCycle.prototype.handleDoubleClicked = function(id, neighborIds) {
-    if (!this.visited.has(id)) {
-        //advance
-        if (this.visited.size == 0) {
-            this.visit(-1, id, null);
+    var edgeId = this.getEdge(neighborIds, this.selected, id);
+    if (edgeId >= 0) {
+        if (this.edgeSet.has(edgeId)) {
+            this.degree[this.selected]--;
+            this.degree[id]--;
         } else {
-            var from = this.permutation[this.permutation.length - 1];
-            this.visit(from, id, neighborIds);
+            this.degree[this.selected]++;
+            this.degree[id]++;
         }
-    } else if (id === this.permutation[this.permutation.length - 1]) {
-        //withdraw
-        if (this.visited.size == 1) {
-            this.withdraw(-1, id, null);
-        } else {
-            from = this.permutation[this.permutation.length - 2];
-            this.withdraw(from, id, neighborIds);
-        }
-    } else if (id === this.permutation[0] && this.visited.size === this.N) {
-        //Final step
-        from = this.permutation[this.permutation.length - 1];
-        this.visit(from, id, neighborIds);
-        if (this.permutation.length === this.N + 1) {
-            this.finished = true;
+    }
+    this.move(id, edgeId);
+    if (edgeId >= 0) {
+        var ok = this.check();
+        if (ok) {
             alert('Congratulation!');
         }
     }
 };
 
-HamiltonCycle.prototype.visit = function(prevId, id, neighborIds) {
-    var visitable = false;
-    var edgeId = -1;
-    if (prevId === -1) {
-        visitable = true;
-    } else {
-        edgeId = this.getEdge(neighborIds, prevId, id);
-        if (edgeId >= 0) {
-            visitable = true;
+HamiltonCycle.prototype.recCheck = function(id, visited, graph) {
+    visited[id] = true;
+    for (var i = 0; i < graph[id].length; i++) {
+        var next = graph[id][i];
+        if (visited[next] !== true) {
+            this.recCheck(next, visited, graph);
+        }
+    }
+};
+
+HamiltonCycle.prototype.check = function(){
+    for (var i = 0; i < this.N; i++) {
+        if (this.degree[i] != 2) {
+            return false;
         }
     }
 
-    if (!visitable) {
+    var graph = new Array(this.N);
+    for (i = 0; i < this.N; i++) {
+        graph[i] = [];
+    }
+
+    this.edgeSet.forEach(function(edgeId) {
+        var edge = this.edges.get(edgeId);
+        graph[edge.from].push(edge.to);
+        graph[edge.to].push(edge.from);
+    }.bind(this));
+
+    var visited = new Array(this.N);
+    this.recCheck(0, visited, graph);
+
+    for (i = 0; i < this.N; i++) {
+        if (visited[i] !== true) {
+            return false;
+        }
+    }
+
+    return true;
+};
+
+HamiltonCycle.prototype.move = function(id, edgeId) {
+    if (this.selected === id) {
+        this.nodeColorChange(id, false);
+        this.selected = -1;
+        return;
+    } else if (this.selected === -1) {
+        this.nodeColorChange(id, true);
+        this.selected = id;
         return;
     }
 
-    //Changing node color
-    this.nodes.update(
-        [
+    this.nodeColorChange(this.selected, false);
+    this.nodeColorChange(id, true);
+    this.selected = id;
+
+    if (edgeId === -1) {
+        return;
+    }
+
+    if (this.edgeSet.has(edgeId)) {
+        this.edgeSet.delete(edgeId);
+        this.edges.update([
             {
-                id: id,
-                color: {
-                    background: this.HEAD_NODE,
-                    highlight: {
-                        background: this.HEAD_NODE
-                    }
-                }
+                id: edgeId,
+                color: null
             }
-        ]
-    );
-    if (prevId >= 0) {
-        //Changing edge color
+        ]);
+    } else {
+        this.edgeSet.add(edgeId);
         this.edges.update([
             {
                 id: edgeId,
@@ -183,11 +215,15 @@ HamiltonCycle.prototype.visit = function(prevId, id, neighborIds) {
                 }
             }
         ]);
+    }
+};
 
+HamiltonCycle.prototype.nodeColorChange = function(id, select) {
+    if (select) {
         this.nodes.update(
             [
                 {
-                    id: prevId,
+                    id: id,
                     color: {
                         background: this.SELECTED_NODE,
                         highlight: {
@@ -197,44 +233,29 @@ HamiltonCycle.prototype.visit = function(prevId, id, neighborIds) {
                 }
             ]
         );
-    }
-    this.visited.add(id);
-    this.permutation.push(id);
-};
-
-HamiltonCycle.prototype.withdraw = function(prevId, id, neighborIds) {
-    this.nodes.update(
-        [
-            {
-                id: id,
-                color: null
+    } else {
+        var color = null;
+        if (this.degree[id] > 0) {
+            var colorVal = this.PASSED_NODE;
+            if (this.degree[id] > 2) {
+                colorVal = this.OVER_NODE;
             }
-        ]
-    );
-    if (prevId >= 0) {
-        var edgeId = this.getEdge(neighborIds, prevId, id);
-        this.edges.update([
-            {
-                id: edgeId,
-                color: null
-            }
-        ]);
+            color = {
+                background: colorVal,
+                highlight: {
+                    background: colorVal
+                }
+            };
+        }
         this.nodes.update(
             [
                 {
-                    id: prevId,
-                    color: {
-                        background: this.HEAD_NODE,
-                        highlight: {
-                            background: this.HEAD_NODE
-                        }
-                    }
+                    id: id,
+                    color: color
                 }
             ]
         );
     }
-    this.visited.delete(id);
-    this.permutation.pop();
 };
 
 HamiltonCycle.prototype.getEdge = function(neighborIds, fId, tId) {
@@ -249,7 +270,7 @@ HamiltonCycle.prototype.getEdge = function(neighborIds, fId, tId) {
     return -1;
 };
 
-var hamiltonCycle = new HamiltonCycle(10, 10);
+var hamiltonCycle = new HamiltonCycle(15, Math.floor(15 * 1.5));
 
 $(function(){
     $('#generate').click(function() {

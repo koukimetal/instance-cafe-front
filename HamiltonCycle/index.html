@@ -2,6 +2,7 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>Hamilton Cycle</title>
 
     <script type="text/javascript" src="../3rd/jquery.js"></script>
@@ -25,7 +26,7 @@
         <div id="graph" class="tab-pane fade in active">
             <div class="form-group-sm form-group form-inline">
                 <label for="vertex">N:</label>
-                <input type="text" class="form-control input-sm" id="vertex">
+                <input type="text" class="form-control input-sm" id="vertex" value="15">
             </div>
             <div class="form-group form-inline">
                 <label for="edge">M: N</label>
@@ -33,13 +34,18 @@
                     <option value="multi">*</option>
                     <option value="plus">+</option>
                 </select>
-                <input type="text" class="form-control input-sm" id="edge">
+                <input type="text" class="form-control input-sm" id="edge" value="1.5">
             </div>
             <button type="button" id="generate" class="btn btn-default">Generate</button>
         </div>
         <div id="description" class="tab-pane fade">
-            <h3>Menu 1</h3>
-            <p>Some content in menu 1.</p>
+            <b>HamiltonCycle</b>: You should find a cycle which contains all vertices.<br />
+            <b>Double click!</b>, then you can select a vertex. It should be yellow.<br />
+            When you selected a vertex again,<br />
+            if the previous selected vertex has an edge to the selected vertex,<br />
+            we recognize that you want to use the edge to make hamilton cycle.<br />
+            If the edge was already used, the edge should be canceled.<br />
+            You can cancel the selected vertex, when you double clicked it again.
         </div>
     </div>
     <div id="specialThanks">I just used <a href="http://visjs.org/">visjs</a></div>
