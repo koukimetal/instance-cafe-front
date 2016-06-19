@@ -11,49 +11,37 @@
 
     <script type="text/javascript" src="../3rd/bootstrap/js/bootstrap.js"></script>
     <link rel="stylesheet" type="text/css" href="../3rd/bootstrap/css/bootstrap.css" />
-
-    <script type="text/javascript" src="main.js"></script>
     <link rel="stylesheet" type="text/css" href="main.css" />
 </head>
 <body>
-<p>
-    Create a simple network with some nodes and edges.
-</p>
-
     <div id="problem"></div>
+    <script type="text/javascript" src="main.js"></script>
 
-    <script type="text/javascript">
-        // create an array with nodes
-        var nodes = new vis.DataSet([
-            {id: 1, label: 'Node 1'},
-            {id: 2, label: 'Node 2'},
-            {id: 3, label: 'Node 3'},
-            {id: 4, label: 'Node 4'},
-            {id: 5, label: 'Node 5'}
-        ]);
-
-        // create an array with edges
-        var edges = new vis.DataSet([
-            {from: 1, to: 3},
-            {from: 1, to: 2},
-            {from: 2, to: 4},
-            {from: 2, to: 5}
-        ]);
-
-        // create a network
-        var container = document.getElementById('problem');
-        var data = {
-            nodes: nodes,
-            edges: edges
-        };
-        var options = {};
-        var network = new vis.Network(container, data, options);
-        network.on("doubleClick", function (params) {
-            console.log(params);
-        });
-
-
-    </script>
+    <ul class="nav nav-tabs">
+        <li class="active"><a data-toggle="tab" href="#graph">Graph</a></li>
+        <li><a data-toggle="tab" href="#description">Description</a></li>
+    </ul>
+    <div class="tab-content graph-tab">
+        <div id="graph" class="tab-pane fade in active">
+            <div class="form-group-sm form-group form-inline">
+                <label for="vertex">N:</label>
+                <input type="text" class="form-control input-sm" id="vertex">
+            </div>
+            <div class="form-group form-inline">
+                <label for="edge">M: N</label>
+                <select id="operator" class="form-control input-sm">
+                    <option value="multi">*</option>
+                    <option value="plus">+</option>
+                </select>
+                <input type="text" class="form-control input-sm" id="edge">
+            </div>
+            <button type="button" id="generate" class="btn btn-default">Generate</button>
+        </div>
+        <div id="description" class="tab-pane fade">
+            <h3>Menu 1</h3>
+            <p>Some content in menu 1.</p>
+        </div>
+    </div>
     <div id="specialThanks">I just used <a href="http://visjs.org/">visjs</a></div>
 </body>
 </html>
