@@ -291,31 +291,56 @@ HamiltonCycle.prototype.export = function() {
     return res.join('\n');
 };
 
-var hamiltonCycle = new HamiltonCycle(15, Math.floor(15 * 1.5));
-$('#rawData').val(hamiltonCycle.export());
-$(function(){
-    $('#generate').click(function() {
-        var N = $('#vertex').val();
-        var operator = $('#operator').val();
-        var edge = $('#edge').val();
-        var M = 0;
-        if (operator === 'plus') {
-            M = N + edge;
-        } else if (operator === 'multi') {
-            M = N * edge;
+HamiltonCycle.prototype.setPhysics = function(physics) {
+    this.network.setOptions({physics: {
+        enabled: physics
+    }});
+};
+
+
+HamiltonCycle.prototype.setSmooth = function(smooth) {
+    this.network.setOptions({edges: {
+        smooth: {
+            enabled: smooth
         }
-        M = Math.floor(M);
-        hamiltonCycle = new HamiltonCycle(N, M);
-        $('#rawData').val(hamiltonCycle.export());
-    });
+    }});
+};
 
-    $('#physics').click(function() {
-        var physics = $("#physics").is(':checked');
-        hamiltonCycle.network.setOptions({physics: {
-            enabled: physics
-        }});
-    });
+var hamiltonCycle = new HamiltonCycle(15, Math.floor(15 * 1.5));
 
+var handlePhysics = function() {
+    var physics = $('#physics').is(':checked');
+    hamiltonCycle.setPhysics(physics);
+};
 
+var handleSmooth = function() {
+    var smooth = $('#smooth').is(':checked');
+    hamiltonCycle.setSmooth(smooth);
+};
+
+$('#rawData').val(hamiltonCycle.export());
+
+$('#generate').click(function() {
+    var N = $('#vertex').val();
+    var operator = $('#operator').val();
+    var edge = $('#edge').val();
+    var M = 0;
+    if (operator === 'plus') {
+        M = N + edge;
+    } else if (operator === 'multi') {
+        M = N * edge;
+    }
+    M = Math.floor(M);
+    hamiltonCycle = new HamiltonCycle(N, M);
+    $('#rawData').val(hamiltonCycle.export());
+    handlePhysics();
+    handleSmooth();
 });
 
+$('#physics').click(function() {
+    handlePhysics();
+});
+
+$('#smooth').click(function() {
+    handleSmooth();
+});
