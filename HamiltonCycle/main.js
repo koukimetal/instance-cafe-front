@@ -321,9 +321,9 @@ var handleSmooth = function() {
 $('#rawData').val(hamiltonCycle.export());
 
 $('#generate').click(function() {
-    var N = $('#vertex').val();
+    var N = parseInt($('#vertex').val());
     var operator = $('#operator').val();
-    var edge = $('#edge').val();
+    var edge = parseInt($('#edge').val());
     var M = 0;
     if (operator === 'plus') {
         M = N + edge;
