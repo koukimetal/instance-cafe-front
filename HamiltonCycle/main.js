@@ -1,9 +1,8 @@
 "use strict";
 //WISH show degree
-var HamiltonCycle = function (N, M) {
+var HamiltonCycle = function (N, E) {
     this.nodes = this.makeNodes(N);
-    M = Math.min(M, Math.floor((N*(N-1))/2));
-    this.edges = this.makeEdges(this.makeRandomEdge(N, M));
+    this.edges = this.makeEdges(E);
     this.container = document.getElementById('problem');
     this.data = {
         nodes: this.nodes,
@@ -30,6 +29,10 @@ var HamiltonCycle = function (N, M) {
     this.network = new vis.Network(this.container, this.data, this.options);
     this.network.on("doubleClick", function (params) {
         if (params.nodes.length == 0) {
+            if (this.selected !== -1) {
+                this.nodeColorChange(this.selected, false);
+                this.selected = -1;
+            }
             return;
         }
         var id = params.nodes[0];
@@ -51,72 +54,6 @@ HamiltonCycle.prototype.makeEdges = function(E) {
         edges[i/2] = {id: i/2, from: E[i], to: E[i+1]};
     }
     return new vis.DataSet(edges);
-};
-
-HamiltonCycle.prototype.getRandomInt = function(min, max) {
-    return Math.floor( Math.random() * (max - min + 1) ) + min;
-};
-
-HamiltonCycle.prototype.shuffle = function(array) {
-    for (var i = 0; i < array.length; i++) {
-        var p = this.getRandomInt(i, array.length - 1);
-        var a = array[i];
-        array[i] = array[p];
-        array[p] = a;
-    }
-};
-
-HamiltonCycle.prototype.getRandomPerm = function(N) {
-    var perm = new Array(N);
-    for (var i = 0; i < N; i++) {
-        perm[i] = i;
-    }
-    this.shuffle(perm);
-    return perm;
-};
-
-HamiltonCycle.prototype.makeRandomEdge = function(N, M) {
-    if (M < N || N < 3) {
-        console.log("impossible");
-        return;
-    }
-
-    var res = new Array(2 * M);
-    var ecnt = 0;
-
-    var connect = new Array(N);
-    //Ensure hamilton cycle
-    var perm = this.getRandomPerm(N);
-    for (var i = 0; i < N; i++) {
-        var a = perm[i];
-        var b = perm[(i + 1)%N];
-        connect[a] = b;
-        res[2*ecnt] = a;
-        res[2*ecnt + 1] = b;
-        ecnt++;
-    }
-
-    var eperm = new Array(Math.floor((N*(N-1))/2));
-    var tempCnt = 0;
-    for (i = 0; i < N; i++) {
-        for (var j = i + 1; j < N; j++) {
-            eperm[tempCnt++] = [i, j];
-        }
-    }
-    this.shuffle(eperm);
-
-    for (i = 0; i < eperm.length && ecnt < M; i++) {
-        a = eperm[i][0];
-        b = eperm[i][1];
-        if (connect[a] == b || connect[b] == a) {
-            continue;
-        }
-
-        res[2*ecnt] = a;
-        res[2*ecnt + 1] = b;
-        ecnt++;
-    }
-    return res;
 };
 
 HamiltonCycle.prototype.handleDoubleClicked = function(id, neighborIds) {
@@ -306,7 +243,79 @@ HamiltonCycle.prototype.setSmooth = function(smooth) {
     }});
 };
 
-var hamiltonCycle = new HamiltonCycle(15, Math.floor(15 * 1.5));
+var getRandomInt = function(min, max) {
+    return Math.floor( Math.random() * (max - min + 1) ) + min;
+};
+
+var shuffle = function(array) {
+    for (var i = 0; i < array.length; i++) {
+        var p = getRandomInt(i, array.length - 1);
+        var a = array[i];
+        array[i] = array[p];
+        array[p] = a;
+    }
+};
+
+var getRandomPerm = function(N) {
+    var perm = new Array(N);
+    for (var i = 0; i < N; i++) {
+        perm[i] = i;
+    }
+    shuffle(perm);
+    return perm;
+};
+
+var makeRandomEdgeEnsuringHamiltonCycle = function(N, M) {
+    if (M < N || N < 3) {
+        console.log("impossible");
+        return;
+    }
+
+    var res = new Array(2 * M);
+    var ecnt = 0;
+
+    var connect = new Array(N);
+    //Ensure hamilton cycle
+    var perm = getRandomPerm(N);
+    for (var i = 0; i < N; i++) {
+        var a = perm[i];
+        var b = perm[(i + 1)%N];
+        connect[a] = b;
+        res[2*ecnt] = a;
+        res[2*ecnt + 1] = b;
+        ecnt++;
+    }
+
+    var eperm = new Array(Math.floor((N*(N-1))/2));
+    var tempCnt = 0;
+    for (i = 0; i < N; i++) {
+        for (var j = i + 1; j < N; j++) {
+            eperm[tempCnt++] = [i, j];
+        }
+    }
+    shuffle(eperm);
+
+    for (i = 0; i < eperm.length && ecnt < M; i++) {
+        a = eperm[i][0];
+        b = eperm[i][1];
+        if (connect[a] == b || connect[b] == a) {
+            continue;
+        }
+
+        res[2*ecnt] = a;
+        res[2*ecnt + 1] = b;
+        ecnt++;
+    }
+    return res;
+};
+
+var randomHamilton = function(N, M) {
+    M = Math.max(N, Math.min(M, Math.floor((N*(N-1))/2)));
+    var E = makeRandomEdgeEnsuringHamiltonCycle(N, M);
+    return new HamiltonCycle(N, E);
+};
+
+var hamiltonCycle = randomHamilton(15, 15 * 1.5);
 
 var handlePhysics = function() {
     var physics = $('#physics').is(':checked');
@@ -320,10 +329,10 @@ var handleSmooth = function() {
 
 $('#rawData').val(hamiltonCycle.export());
 
-$('#generate').click(function() {
+$('#randomGenerate').click(function() {
     var N = parseInt($('#vertex').val());
     var operator = $('#operator').val();
-    var edge = parseInt($('#edge').val());
+    var edge = parseFloat($('#edge').val());
     var M = 0;
     if (operator === 'plus') {
         M = N + edge;
@@ -331,7 +340,20 @@ $('#generate').click(function() {
         M = N * edge;
     }
     M = Math.floor(M);
-    hamiltonCycle = new HamiltonCycle(N, M);
+    hamiltonCycle = randomHamilton(N, M);
+    handlePhysics();
+    handleSmooth();
+    $('#rawData').val(hamiltonCycle.export());
+});
+
+$('#inputGenerate').click(function() {
+    var text = $('#inputGraph').val();
+    var nums = text.split(/\s+/);
+    var N = nums[0];
+    var M = nums[1];
+    var E = nums.slice(2, 2 + M);
+
+    hamiltonCycle = new HamiltonCycle(N, E);
     $('#rawData').val(hamiltonCycle.export());
     handlePhysics();
     handleSmooth();
