@@ -6,6 +6,7 @@ var HeadRow = React.createClass({
                 <th>name</th>
                 <th>N</th>
                 <th>M</th>
+                <th>game</th>
             </tr>
         );
     }
@@ -13,12 +14,14 @@ var HeadRow = React.createClass({
 
 var NormalRow = React.createClass({
     render: function() {
+        var gameLink = '../HamiltonCycle/game.html' + '?id=p' + this.props.id;
         return (
             <tr>
                 <td>{this.props.id}</td>
                 <td>{this.props.name}</td>
                 <td>{this.props.N}</td>
                 <td>{this.props.M}</td>
+                <td><a href={gameLink}>game</a></td>
             </tr>
         );
     }
@@ -68,6 +71,7 @@ var MainTable = React.createClass({
                 this.setState({data: data});
             }.bind(this),
             error: function(xhr, status, err) {
+                this.state.pos -= vector;
                 console.error(url, status, err.toString());
             }.bind(this)
         });
