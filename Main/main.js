@@ -7,6 +7,7 @@ var HeadRow = React.createClass({
                 <th>N</th>
                 <th>M</th>
                 <th>game</th>
+                <th>console</th>
             </tr>
         );
     }
@@ -15,6 +16,7 @@ var HeadRow = React.createClass({
 var NormalRow = React.createClass({
     render: function() {
         var gameLink = '../HamiltonCycle/game.html' + '?id=p' + this.props.id;
+        var consoleLink = '../HamiltonCycle/console.html' + '?id=p' + this.props.id;
         return (
             <tr>
                 <td>{this.props.id}</td>
@@ -22,6 +24,7 @@ var NormalRow = React.createClass({
                 <td>{this.props.N}</td>
                 <td>{this.props.M}</td>
                 <td><a href={gameLink}>game</a></td>
+                <td><a href={consoleLink}>console</a></td>
             </tr>
         );
     }
@@ -81,6 +84,7 @@ var MainTable = React.createClass({
         var data = this.state.data;
         return (
             <div>
+                <a href="new.html">Submit your graph</a>
                 <table className="table">
                     <thead>
                     <HeadRow />
