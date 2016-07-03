@@ -40,15 +40,53 @@ var check = function(input) {
     return true;
 };
 
-$('#submitGraph').click(function() {
+var getInput = function() {
     var text = $('#MyGraph').val();
     var input = text.split(/\s+/);
 
     input = input.filter(function(val) {
         return val !== "";
     });
+    
+    return input;
+};
 
+$('#submitGraph').click(function() {
+    var input = getInput();
     if (check(input)) {
         alert('success');
+    }
+});
+
+var hamiltonCycle;
+
+HamiltonCycle.prototype.success = function(result) {
+    alert('You found hamilton cycle');
+};
+
+var handlePhysics = function() {
+    var physics = $('#physics').is(':checked');
+    hamiltonCycle.setPhysics(physics);
+};
+
+var handleSmooth = function() {
+    var smooth = $('#smooth').is(':checked');
+    hamiltonCycle.setSmooth(smooth);
+};
+
+$('#physics').click(function() {
+    handlePhysics();
+});
+
+$('#smooth').click(function() {
+    handleSmooth();
+});
+
+$('#visualizeGraph').click(function() {
+    var input = getInput();
+    if (check(input)) {
+        hamiltonCycle = new HamiltonCycle(input[0], input.slice(2));
+        handlePhysics();
+        handleSmooth();
     }
 });

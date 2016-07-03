@@ -39,7 +39,17 @@ def generate(raw_dir, problem_dir, page_dir):
                 "name": name,
                 "id": id
             }
-            problems.append(profile)
+
+            ans_src_path = raw_dir + '/ans/' + file_name
+            if os.path.isfile(ans_src_path):
+                ans_dst_path = problem_dir + 'ans/p' + str(id) + '.json'
+                profile['answer'] = True
+                with open(ans_src_path, "r") as fileAnsIn:
+                    ans = [int(s) for s in fileAnsIn.readline().split()]
+                    with open(ans_dst_path, 'w') as fileOut:
+                        json.dump(ans, fileOut)
+
+        problems.append(profile)
 
     for i in xrange(0, len(problems), PAGE_SIZE):
         part = problems[i:i + PAGE_SIZE]

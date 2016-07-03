@@ -8,12 +8,25 @@ var HeadRow = React.createClass({
                 <th>M</th>
                 <th>game</th>
                 <th>console</th>
+                <th>answer</th>
             </tr>
         );
     }
 });
 
 var NormalRow = React.createClass({
+
+    answerTag: function() {
+        if (this.props.answer === true) {
+            var answerLink = '../HamiltonCycle/answer.html' + '?id=p' + this.props.id;
+            return (
+                <a href={answerLink}>answer</a>
+            )
+        } else {
+            return '';
+        }
+    },
+
     render: function() {
         var gameLink = '../HamiltonCycle/game.html' + '?id=p' + this.props.id;
         var consoleLink = '../HamiltonCycle/console.html' + '?id=p' + this.props.id;
@@ -25,6 +38,7 @@ var NormalRow = React.createClass({
                 <td>{this.props.M}</td>
                 <td><a href={gameLink}>game</a></td>
                 <td><a href={consoleLink}>console</a></td>
+                <td>{this.answerTag()}</td>
             </tr>
         );
     }
@@ -92,7 +106,7 @@ var MainTable = React.createClass({
                     <tbody>
                     {data.map(
                         function(row) {
-                            return <NormalRow id={row.id} name={row.name} N={row.N} M={row.M} />
+                            return <NormalRow id={row.id} name={row.name} N={row.N} M={row.M} answer={row.answer} />
                         }
                     )}
                     </tbody>
