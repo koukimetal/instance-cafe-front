@@ -1,3 +1,5 @@
+import $ from 'jquery';
+
 var HeadRow = React.createClass({
     render: function() {
         return (
@@ -117,3 +119,8 @@ var MainTable = React.createClass({
         );
     }
 });
+
+ReactDOM.render(
+    <MainTable url="sample/p1.json" />,
+    document.getElementById('content')
+);
