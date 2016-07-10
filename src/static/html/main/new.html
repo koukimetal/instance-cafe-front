@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Hamilton Cycle</title>
+</head>
+<body>
+    <div id="description" class="tab-pane fade in active">
+        <b>Submit your graph!</b>: You can submit any UNdirected graph.<br>
+    </div>
+    <hr>
+    <label for="MyGraph">Graph</label>
+    <textarea id="MyGraph" class="form-control" rows="10"></textarea>
+    <button id="submitGraph" class="btn btn-default btn-sm">Submit</button>
+    <button id="visualizeGraph" class="btn btn-default btn-sm">Visualize</button>
+    <div class="checkbox options">
+        <label>
+            <input type="checkbox" id="physics" checked> physics system
+        </label>
+    </div>
+    <div class="checkbox options">
+        <label>
+            <input type="checkbox" id="smooth" checked> smooth
+        </label>
+    </div>
+    <div id="problem"></div>
+    <script src="../../core.bundle.js"></script>
+    <script>EntryPoint.initMainNew();</script>
+</body>
+</html>
