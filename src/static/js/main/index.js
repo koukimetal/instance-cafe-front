@@ -87,9 +87,7 @@ var MainTable = React.createClass({
             return;
         }
         this.state.pos += vector;
-        //This lines are split 2 lines intentionally to make webpack parser to find correct path
-        var basePath = '../../json/main/';
-        var url = basePath + 'p' + this.state.pos + '.json';
+        var url = '../../json/main/p' + this.state.pos + '.json';
         $.ajax({
             url: url,
             dataType: 'json',

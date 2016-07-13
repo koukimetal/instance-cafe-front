@@ -6,6 +6,24 @@ import '../../css/common.css';
 import 'jquery';
 import 'bootstrap/dist/css/bootstrap.css';
 
+var checkConnectedRec = function(graph, v, visited) {
+    visited[v] = true;
+    var size = 1;
+    for (let nv of graph[v]) {
+        if (!visited[nv]) {
+            size += checkConnectedRec(graph, nv, visited);
+        }
+    }
+    return size;
+};
+
+var checkConnected = function(graph) {
+    var N = graph.length;
+    var visited = new Array(N).fill(false);
+    var size = checkConnectedRec(graph, 0, visited);
+    return size === N;
+};
+
 var check = function(input) {
     var N = + input[0];
     var M = + input[1];
@@ -42,6 +60,10 @@ var check = function(input) {
         }
         graph[a].add(b);
         graph[b].add(a);
+    }
+    if (!checkConnected(graph)) {
+        alert('Please connected graph');
+        return false;
     }
     return true;
 };

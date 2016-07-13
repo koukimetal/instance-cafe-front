@@ -3,7 +3,7 @@ var webpack = require("webpack");
 module.exports = {
     entry: ['./src/static/core.js'],
     output: {
-        path: './src/static/',
+        path: './src/static/html/',
         filename: 'core.bundle.js',
         libraryTarget: 'var',
         library: 'EntryPoint'
