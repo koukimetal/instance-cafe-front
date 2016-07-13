@@ -6,68 +6,6 @@ import '../../css/common.css';
 import 'jquery';
 import 'bootstrap/dist/css/bootstrap.css';
 
-var checkConnectedRec = function(graph, v, visited) {
-    visited[v] = true;
-    var size = 1;
-    for (let nv of graph[v]) {
-        if (!visited[nv]) {
-            size += checkConnectedRec(graph, nv, visited);
-        }
-    }
-    return size;
-};
-
-var checkConnected = function(graph) {
-    var N = graph.length;
-    var visited = new Array(N).fill(false);
-    var size = checkConnectedRec(graph, 0, visited);
-    return size === N;
-};
-
-var check = function(input) {
-    var N = + input[0];
-    var M = + input[1];
-    
-    if (N <= 0) {
-        alert('N is too small');
-        return false;
-    }
-    if (M > Math.floor((N*(N-1))/2)) {
-        alert('M is too big');
-        return false;
-    }
-
-    if (input.length < 2 + 2*M) {
-        alert('Input is too small');
-        return false;
-    }
-
-    var graph = new Array(N);
-    for (var i = 0; i < N; i++) {
-        graph[i] = new Set();
-    }
-
-    for (i = 0; i < M; i++) {
-        var a = + input[2 + 2*i];
-        var b = + input[2 + 2*i + 1];
-        if (a < 0 || N <= a || b < 0 || N <= b) {
-            alert(a + ' ' + b + ' is wrong edge');
-            return false;
-        }
-        if (graph[a].has(b) || graph[b].has(a)) {
-            alert('edge ' + a + ' ' + b + ' is duplicated');
-            return false;
-        }
-        graph[a].add(b);
-        graph[b].add(a);
-    }
-    if (!checkConnected(graph)) {
-        alert('Please connected graph');
-        return false;
-    }
-    return true;
-};
-
 class customizedHamilton extends HamiltonCycle {
     success(result) {
         alert('You found a hamilton cycle!');
@@ -89,8 +27,14 @@ var handleSmooth = function() {
 export default function() {
     $('#submitGraph').click(function() {
         var input = common.parseInput($('#MyGraph').val());
-        if (check(input)) {
-            alert('success');
+        var obj = common.generateGraph(input);
+        if (obj.message !== 'success') {
+            alert(obj.message);
+        } else if (!common.checkConnected(obj.graph)) {
+            alert('graph is not connected');
+        } else {
+            alert('success!');
+            console.log(common.graphToRequest(obj.graph));
         }
     });
 
@@ -104,7 +48,10 @@ export default function() {
 
     $('#visualizeGraph').click(function() {
         var input = common.parseInput($('#MyGraph').val());
-        if (check(input)) {
+        var obj = common.generateGraph(input);
+        if (obj.message !== 'success') {
+            alert(obj.message);
+        } else {
             var container = document.getElementById('problem');
             hamiltonCycle = new customizedHamilton(input[0], input.slice(2), container);
             handlePhysics();

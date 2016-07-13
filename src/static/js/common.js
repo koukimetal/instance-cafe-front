@@ -1,5 +1,16 @@
 "use strict";
 
+var sizeOfConnectedComponent = function(graph, v, visited) {
+    visited[v] = true;
+    var size = 1;
+    for (let nv of graph[v]) {
+        if (!visited[nv]) {
+            size += sizeOfConnectedComponent(graph, nv, visited);
+        }
+    }
+    return size;
+};
+
 export default {
     getUrlParameter : function() {
         var queries = decodeURIComponent(window.location.search.substring(1));
@@ -31,5 +42,78 @@ export default {
         });
 
         return input;
+    },
+
+    checkConnected : function(graph) {
+        var N = graph.length;
+        var visited = new Array(N).fill(false);
+        var size = sizeOfConnectedComponent(graph, 0, visited);
+        return size === N;
+    },
+
+    generateGraph : function(input) {
+        var res = {
+            'message' : 'success'
+        };
+
+        var N = + input[0];
+        var M = + input[1];
+
+        if (N <= 0) {
+            res['message'] = 'N is too small';
+            return res;
+        }
+        if (M > Math.floor((N*(N-1))/2)) {
+            res['message'] = 'M is too big';
+            return res;
+        }
+
+        if (input.length < 2 + 2*M) {
+            res['message'] = 'Input is too small';
+            return res;
+        }
+
+        var graph = new Array(N);
+        for (var i = 0; i < N; i++) {
+            graph[i] = new Set();
+        }
+
+        for (i = 0; i < M; i++) {
+            var a = + input[2 + 2*i];
+            var b = + input[2 + 2*i + 1];
+            if (a < 0 || N <= a || b < 0 || N <= b) {
+                res['message'] = 'edge' + a + ' ' + b + ' is wrong';
+                return res;
+            }
+            if (graph[a].has(b) || graph[b].has(a)) {
+                res['message'] = 'edge ' + a + ' ' + b + ' is duplicated';
+                return res;
+            }
+            graph[a].add(b);
+            graph[b].add(a);
+        }
+        res['graph'] = graph;
+        return res;
+    },
+
+    graphToRequest : function(graph) {
+        var N = graph.length;
+        var V = new Array(N);
+        var M = 0;
+        for (var i = 0; i < N; i++) {
+            V[i] = new Array(graph[i].size);
+            var j = 0;
+            for (let v of graph[i]) {
+                V[i][j] = v;
+                j++;
+            }
+            M += j;
+        }
+        M = Number.parseInt(M/2);
+        return {
+            'N' : N,
+            'M' : M,
+            'V' : V
+        };
     }
 };
