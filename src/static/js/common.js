@@ -56,8 +56,8 @@ export default {
             'message' : 'success'
         };
 
-        var N = + input[0];
-        var M = + input[1];
+        var N = Number.parseInt(input[0]);
+        var M = Number.parseInt(input[1]);
 
         if (N <= 0) {
             res['message'] = 'N is too small';
@@ -79,9 +79,9 @@ export default {
         }
 
         for (i = 0; i < M; i++) {
-            var a = + input[2 + 2*i];
-            var b = + input[2 + 2*i + 1];
-            if (a < 0 || N <= a || b < 0 || N <= b) {
+            var a = Number.parseInt(input[2 + 2*i]);
+            var b = Number.parseInt(input[2 + 2*i + 1]);
+            if (a < 0 || N <= a || b < 0 || N <= b || a === b) {
                 res['message'] = 'edge' + a + ' ' + b + ' is wrong';
                 return res;
             }
