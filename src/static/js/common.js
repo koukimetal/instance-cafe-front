@@ -50,7 +50,7 @@ export default {
 
         return res.join('\n');
     },
-    
+
     parseInput : function(text) {
         var input = text.split(/\s+/);
 

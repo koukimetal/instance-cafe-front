@@ -49,13 +49,16 @@ var initialize = function() {
 };
 
 var check = function(cycle) {
+    var res = {};
     if (cycle.length < 4) {
-        alert('Give me cycle');
-        return false;
+        res['message'] = 'Give me cycle';
+        res['ok'] = false;
+        return res;
     }
     if (cycle[0] !== cycle[GRAPH.length]) {
-        alert('Start and end should be same');
-        return false;
+        res['message'] = 'Start and end should be same';
+        res['ok'] = false;
+        return res;
     }
     var vd = new Array(GRAPH.length);
     vd = vd.map(function() {return 0});
@@ -63,17 +66,20 @@ var check = function(cycle) {
     for (var i = 1; i < cycle.length; i++) {
         var nx = cycle[i];
         if (!GRAPH[v].has(nx)) {
-            alert('No edge from ' + v + ' to ' + nx);
-            return false;
+            res['message'] = 'No edge from ' + v + ' to ' + nx;
+            res['ok'] = false;
+            return res;
         }
         vd[nx]++;
         if (vd[nx] >= 2) {
-            alert("Don't visit same vertex twice");
-            return false;
+            res['message'] = "Don't visit same vertex twice";
+            res['ok'] = false;
+            return res;
         }
         v = nx;
     }
-    return true;
+    res['ok'] = true;
+    return res;
 };
 
 export default function() {
@@ -82,23 +88,23 @@ export default function() {
     initialize();
 
     $('#submitAnswer').click(function() {
-        var text = $('#MyHamilton').val();
-        var input = text.split(/\s+/);
+        var input = common.parseInput($('#MyHamilton').val());
         var cycle = new Array(GRAPH.length + 1);
         var j = 0;
         for (var i = 0; i < input.length && j <= GRAPH.length; i++) {
             var v = input[i];
-            if (v !== "") {
-                cycle[j] = + v;
-                j++;
-            }
+            cycle[j] = + v;
+            j++;
         }
         if (j !== GRAPH.length + 1) {
             alert('The length of cycle should be N + 1');
             return;
         }
-        if (check(cycle)) {
+        var result = check(cycle);
+        if (result['ok']) {
             alert('success!');
+        } else {
+            alert(result['message']);
         }
     });
 }
