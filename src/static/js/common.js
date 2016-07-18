@@ -32,7 +32,7 @@ export default {
             for (var i = 0; i < obj.N; i++) {
                 for (var j = 0; j < obj.V[i].length; j++) {
                     if (i < obj.V[i][j]) {
-                        res[edgeCount] = i + ' ' + obj.V[i][j];
+                        res[edgeCount + 1] = i + ' ' + obj.V[i][j];
                         edgeCount++;
                     }
                 }
