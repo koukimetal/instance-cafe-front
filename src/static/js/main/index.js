@@ -72,7 +72,7 @@ var MainTable = React.createClass({
         $.ajax({
             url: this.props.url,
             dataType: 'json',
-            cache: false,
+            cache: true,
             success: function(data) {
                 this.setState({data: data});
             }.bind(this),
@@ -91,7 +91,7 @@ var MainTable = React.createClass({
         $.ajax({
             url: url,
             dataType: 'json',
-            cache: false,
+            cache: true,
             success: function(data) {
                 this.setState({data: data});
             }.bind(this),
