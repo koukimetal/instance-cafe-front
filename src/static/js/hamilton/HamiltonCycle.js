@@ -3,9 +3,13 @@
 import vis from 'vis';
 
 export default class HamiltonCycle {
-    constructor(N, E, container) {
+    constructor(N, E, container, neighborList) {
         this.nodes = this.makeNodes(N);
-        this.edges = this.makeEdges(E);
+        if (neighborList) {
+            this.edges = this.makeEdgesFromNeighborList(E);
+        } else {
+            this.edges = this.makeEdges(E);
+        }
         this.container = container;
         this.data = {
             nodes: this.nodes,
@@ -58,6 +62,28 @@ export default class HamiltonCycle {
         }
         return new vis.DataSet(edges);
     };
+
+    makeEdgesFromNeighborList(V) {
+        var edgeNum = 0;
+        for (var i = 0; i < V.length; i++) {
+            edgeNum += V[i].length;
+        }
+        edgeNum = Number.parseInt(edgeNum/2);
+        var edges = new Array(edgeNum);
+        var edgeCount = 0;
+        for (i = 0; i < V.length; i++) {
+            for (var j = 0; j < V[i].length; j++) {
+                if (i < V[i][j]) {
+                    edges[edgeCount] = {'id': edgeCount, 'from': i, 'to': V[i][j]};
+                    edgeCount++;
+                }
+            }
+        }
+        if (edgeCount !== edgeNum) {
+            console.log('something wrong with counting edges');
+        }
+        return new vis.DataSet(edges);
+    }
 
     handleDoubleClicked(id, neighborIds) {
         var edgeId = this.getEdge(neighborIds, this.selected, id);

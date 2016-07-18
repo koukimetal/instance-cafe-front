@@ -18,15 +18,15 @@ def generate(raw_dir, problem_dir, page_dir):
         src_path = raw_dir + '/' + file_name
         with open(src_path, "r") as fileIn:
             N, M = (int(s) for s in fileIn.readline().split())
-            E = []
+            V = [[] for j in xrange(N)]
             for i in xrange(0, M):
                 a, b = (int(s) for s in fileIn.readline().split())
-                E.append(a)
-                E.append(b)
+                V[a].append(b)
+                V[b].append(a)
             problem = {
                 "N": N,
                 "M": M,
-                "E": E
+                "V": V
             }
             # for each problem
             dst_path = problem_dir + '/p' + str(id) + '.json'

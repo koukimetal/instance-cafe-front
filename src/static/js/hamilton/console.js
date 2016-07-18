@@ -26,11 +26,20 @@ var initialize = function() {
             for (var i = 0; i < data.N; i++) {
                 GRAPH[i] = new Set();
             }
-            for (i = 0; i < data.M; i++) {
-                var a = + data.E[2*i];
-                var b = + data.E[2*i + 1];
-                GRAPH[a].add(b);
-                GRAPH[b].add(a);
+
+            if (data.V !== undefined) {
+                for (i = 0; i < data.N; i++) {
+                    for (var j = 0; j < data.V[i].length; j++) {
+                        GRAPH[i].add(data.V[i][j]);
+                    }
+                }
+            } else {
+                for (i = 0; i < data.M; i++) {
+                    var a = + data.E[2*i];
+                    var b = + data.E[2*i + 1];
+                    GRAPH[a].add(b);
+                    GRAPH[b].add(a);
+                }
             }
         }.bind(this),
         error: function(xhr, status, err) {

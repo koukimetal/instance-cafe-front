@@ -40,7 +40,7 @@ var initialize = function() {
         cache: true,
         success: function(data) {
             var container = document.getElementById('problem');
-            hamiltonCycle = new customizedHamilton(data.N, data.E, container);
+            hamiltonCycle = new customizedHamilton(data.N, data.V, container, true);
             handlePhysics();
             handleSmooth();
             $('#rawData').val(hamiltonCycle.exportRaw());

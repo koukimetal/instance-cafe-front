@@ -26,11 +26,28 @@ export default {
     jsonToRaw : function(obj) {
         var res = new Array(obj.M + 1);
         res[0] = obj.N + ' ' + obj.M;
-        for (var i = 0; i < obj.M; i++) {
-            var a = obj.E[2*i];
-            var b = obj.E[2*i + 1];
-            res[i + 1] = a + ' ' + b;
+
+        if (obj.V !== undefined) {
+            var edgeCount = 0;
+            for (var i = 0; i < obj.N; i++) {
+                for (var j = 0; j < obj.V[i].length; j++) {
+                    if (i < obj.V[i][j]) {
+                        res[edgeCount] = i + ' ' + obj.V[i][j];
+                        edgeCount++;
+                    }
+                }
+            }
+            if (edgeCount !== obj.M) {
+                console.log('something wrong with edge count');
+            }
+        } else {
+            for (i = 0; i < obj.M; i++) {
+                var a = obj.E[2*i];
+                var b = obj.E[2*i + 1];
+                res[i + 1] = a + ' ' + b;
+            }
         }
+
         return res.join('\n');
     },
     
